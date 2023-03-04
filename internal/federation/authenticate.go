@@ -48,6 +48,15 @@ type publicKeyer interface {
 	GetW3IDSecurityV1PublicKey() vocab.W3IDSecurityV1PublicKeyProperty
 }
 
+func isAllowlistedDomain(domain string) (bool) {
+    for _, v := range config.GetAllowedDomains() {
+        if v == domain {
+            return true
+        }
+    }
+    return false
+}
+
 /*
 getPublicKeyFromResponse is adapted from https://github.com/go-fed/apcore/blob/master/ap/util.go
 Thank you @cj@mastodon.technology ! <3
@@ -166,6 +175,10 @@ func (f *federator) AuthenticateFederatedRequest(ctx context.Context, requestedU
 		requestingRemoteAccount *gtsmodel.Account
 		requestingHost          = requestingPublicKeyID.Host
 	)
+
+    if !isAllowlistedDomain(requestingHost) {
+		return nil, nil
+    }
 
 	if host := config.GetHost(); strings.EqualFold(requestingHost, host) {
 		// LOCAL ACCOUNT REQUEST
