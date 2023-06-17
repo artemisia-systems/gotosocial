@@ -84,6 +84,15 @@ type PubKeyAuth struct {
 	Owner *gtsmodel.Account
 }
 
+func isAllowlistedDomain(domain string) (bool) {
+    for _, v := range config.GetAllowedDomains() {
+        if v == domain {
+            return true
+        }
+    }
+    return false
+}
+
 // AuthenticateFederatedRequest authenticates any kind of incoming federated
 // request from a remote server. This includes things like GET requests for
 // dereferencing our users or statuses etc, and POST requests for delivering
@@ -157,6 +166,10 @@ func (f *federator) AuthenticateFederatedRequest(ctx context.Context, requestedU
 	if local {
 		l.Trace("public key is local, no dereference needed")
 		pubKeyAuth, errWithCode = f.derefPubKeyDBOnly(ctx, pubKeyIDStr)
+	} else if !isAllowlistedDomain(pubKeyID.Host) {
+        err := errors.New("requesting instance not on allowlist.")
+        errWithCode := gtserror.NewErrorUnauthorized(err, err.Error())
+        log.Debug(ctx, errWithCode)
 	} else {
 		l.Trace("public key is remote, checking if we need to dereference")
 		pubKeyAuth, errWithCode = f.derefPubKey(ctx, requestedUsername, pubKeyIDStr, pubKeyID)
