@@ -45,6 +45,15 @@ var (
 	}
 )
 
+func isAllowlistedDomain(domain string) (bool) {
+    for _, v := range config.GetAllowedDomains() {
+        if v == domain {
+            return true
+        }
+    }
+    return false
+}
+
 // AuthenticateFederatedRequest authenticates any kind of incoming federated
 // request from a remote server. This includes things like GET requests for
 // dereferencing our users or statuses etc, and POST requests for delivering
@@ -118,6 +127,10 @@ func (f *federator) AuthenticateFederatedRequest(ctx context.Context, requestedU
 	if pubKeyID.Host == config.GetHost() {
 		l.Trace("public key is ours, no dereference needed")
 		requestingAccountURI, pubKey, errWithCode = f.derefDBOnly(ctx, pubKeyIDStr)
+	} else if !isAllowlistedDomain(pubKeyID.Host) {
+        err := errors.New("requesting instance not on allowlist.")
+        errWithCode := gtserror.NewErrorUnauthorized(err, err.Error())
+        log.Debug(ctx, errWithCode)
 	} else {
 		l.Trace("public key is not ours, checking if we need to dereference")
 		requestingAccountURI, pubKey, errWithCode = f.deref(ctx, requestedUsername, pubKeyIDStr, pubKeyID)
