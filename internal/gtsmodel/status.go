@@ -250,14 +250,6 @@ func (s *Status) MentionsAccount(id string) bool {
 	return false
 }
 
-// StatusToTag is an intermediate struct to facilitate the many2many relationship between a status and one or more tags.
-type StatusToTag struct {
-	StatusID string  `validate:"ulid,required" bun:"type:CHAR(26),unique:statustag,nullzero,notnull"`
-	Status   *Status `validate:"-" bun:"rel:belongs-to"`
-	TagID    string  `validate:"ulid,required" bun:"type:CHAR(26),unique:statustag,nullzero,notnull"`
-	Tag      *Tag    `validate:"-" bun:"rel:belongs-to"`
-}
-
 // StatusToEmoji is an intermediate struct to facilitate the many2many relationship between a status and one or more emojis.
 type StatusToEmoji struct {
 	StatusID string  `validate:"ulid,required" bun:"type:CHAR(26),unique:statusemoji,nullzero,notnull"`

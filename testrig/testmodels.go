@@ -1758,35 +1758,20 @@ func NewTestStatuses() map[string]*gtsmodel.Status {
 func NewTestTags() map[string]*gtsmodel.Tag {
 	return map[string]*gtsmodel.Tag{
 		"welcome": {
-			ID:                     "01F8MHA1A2NF9MJ3WCCQ3K8BSZ",
-			URL:                    "http://localhost:8080/tags/welcome",
-			Name:                   "welcome",
-			FirstSeenFromAccountID: "",
-			CreatedAt:              TimeMustParse("2022-05-14T13:21:09+02:00"),
-			UpdatedAt:              TimeMustParse("2022-05-14T13:21:09+02:00"),
-			Useable:                TrueBool(),
-			Listable:               TrueBool(),
-			LastStatusAt:           TimeMustParse("2022-05-14T13:21:09+02:00"),
+			ID:        "01F8MHA1A2NF9MJ3WCCQ3K8BSZ",
+			Name:      "welcome",
+			CreatedAt: TimeMustParse("2022-05-14T13:21:09+02:00"),
+			UpdatedAt: TimeMustParse("2022-05-14T13:21:09+02:00"),
+			Useable:   TrueBool(),
+			Listable:  TrueBool(),
 		},
 		"Hashtag": {
-			ID:                     "01FCT9SGYA71487N8D0S1M638G",
-			URL:                    "http://localhost:8080/tags/Hashtag",
-			Name:                   "Hashtag",
-			FirstSeenFromAccountID: "",
-			CreatedAt:              TimeMustParse("2022-05-14T13:21:09+02:00"),
-			UpdatedAt:              TimeMustParse("2022-05-14T13:21:09+02:00"),
-			Useable:                TrueBool(),
-			Listable:               TrueBool(),
-			LastStatusAt:           TimeMustParse("2022-05-14T13:21:09+02:00"),
-		},
-	}
-}
-
-func NewTestStatusToTags() map[string]*gtsmodel.StatusToTag {
-	return map[string]*gtsmodel.StatusToTag{
-		"admin_account_status_1_welcome": {
-			StatusID: "01F8MH75CBF9JFX4ZAD54N0W0R",
-			TagID:    "01F8MHA1A2NF9MJ3WCCQ3K8BSZ",
+			ID:        "01FCT9SGYA71487N8D0S1M638G",
+			Name:      "hashtag",
+			CreatedAt: TimeMustParse("2022-05-14T13:21:09+02:00"),
+			UpdatedAt: TimeMustParse("2022-05-14T13:21:09+02:00"),
+			Useable:   TrueBool(),
+			Listable:  TrueBool(),
 		},
 	}
 }

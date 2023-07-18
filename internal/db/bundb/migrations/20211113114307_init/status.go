@@ -32,7 +32,7 @@ type Status struct {
 	AttachmentIDs            []string           `validate:"dive,ulid" bun:"attachments,array"`                                                         // Database IDs of any media attachments associated with this status
 	Attachments              []*MediaAttachment `validate:"-" bun:"attached_media,rel:has-many"`                                                       // Attachments corresponding to attachmentIDs
 	TagIDs                   []string           `validate:"dive,ulid" bun:"tags,array"`                                                                // Database IDs of any tags used in this status
-	Tags                     []*Tag             `validate:"-" bun:"attached_tags,m2m:status_to_tags"`                                                  // Tags corresponding to tagIDs. https://bun.uptrace.dev/guide/relations.html#many-to-many-relation
+	Tags                     []*Tag             `validate:"-" bun:"attached_tags"`                                                                     // Tags corresponding to tagIDs. https://bun.uptrace.dev/guide/relations.html#many-to-many-relation
 	MentionIDs               []string           `validate:"dive,ulid" bun:"mentions,array"`                                                            // Database IDs of any mentions in this status
 	Mentions                 []*Mention         `validate:"-" bun:"attached_mentions,rel:has-many"`                                                    // Mentions corresponding to mentionIDs
 	EmojiIDs                 []string           `validate:"dive,ulid" bun:"emojis,array"`                                                              // Database IDs of any emojis used in this status

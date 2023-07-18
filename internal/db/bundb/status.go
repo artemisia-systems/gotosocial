@@ -43,7 +43,6 @@ func (s *statusDB) newStatusQ(status interface{}) *bun.SelectQuery {
 	return s.conn.
 		NewSelect().
 		Model(status).
-		Relation("Tags").
 		Relation("CreatedWithApplication")
 }
 
@@ -214,9 +213,16 @@ func (s *statusDB) PopulateStatus(ctx context.Context, status *gtsmodel.Status) 
 		}
 	}
 
-	// TODO: once we don't fetch using relations.
-	// if !status.TagsPopulated() {
-	// }
+	if !status.TagsPopulated() {
+		// Status tags are out-of-date with IDs, repopulate.
+		status.Tags, err = s.state.DB.GetTags(
+			ctx,
+			status.TagIDs,
+		)
+		if err != nil {
+			errs.Append(fmt.Errorf("error populating status tags: %w", err))
+		}
+	}
 
 	if !status.MentionsPopulated() {
 		// Status mentions are out-of-date with IDs, repopulate.
@@ -258,23 +264,6 @@ func (s *statusDB) PutStatus(ctx context.Context, status *gtsmodel.Status) db.Er
 						EmojiID:  i,
 					}).
 					On("CONFLICT (?, ?) DO NOTHING", bun.Ident("status_id"), bun.Ident("emoji_id")).
-					Exec(ctx); err != nil {
-					err = s.conn.ProcessError(err)
-					if !errors.Is(err, db.ErrAlreadyExists) {
-						return err
-					}
-				}
-			}
-
-			// create links between this status and any tags it uses
-			for _, i := range status.TagIDs {
-				if _, err := tx.
-					NewInsert().
-					Model(&gtsmodel.StatusToTag{
-						StatusID: status.ID,
-						TagID:    i,
-					}).
-					On("CONFLICT (?, ?) DO NOTHING", bun.Ident("status_id"), bun.Ident("tag_id")).
 					Exec(ctx); err != nil {
 					err = s.conn.ProcessError(err)
 					if !errors.Is(err, db.ErrAlreadyExists) {
@@ -335,23 +324,6 @@ func (s *statusDB) UpdateStatus(ctx context.Context, status *gtsmodel.Status, co
 				}
 			}
 
-			// create links between this status and any tags it uses
-			for _, i := range status.TagIDs {
-				if _, err := tx.
-					NewInsert().
-					Model(&gtsmodel.StatusToTag{
-						StatusID: status.ID,
-						TagID:    i,
-					}).
-					On("CONFLICT (?, ?) DO NOTHING", bun.Ident("status_id"), bun.Ident("tag_id")).
-					Exec(ctx); err != nil {
-					err = s.conn.ProcessError(err)
-					if !errors.Is(err, db.ErrAlreadyExists) {
-						return err
-					}
-				}
-			}
-
 			// change the status ID of the media attachments to the new status
 			for _, a := range status.Attachments {
 				a.StatusID = status.ID
@@ -403,15 +375,6 @@ func (s *statusDB) DeleteStatusByID(ctx context.Context, id string) db.Error {
 			NewDelete().
 			TableExpr("? AS ?", bun.Ident("status_to_emojis"), bun.Ident("status_to_emoji")).
 			Where("? = ?", bun.Ident("status_to_emoji.status_id"), id).
-			Exec(ctx); err != nil {
-			return err
-		}
-
-		// delete links between this status and any tags it uses
-		if _, err := tx.
-			NewDelete().
-			TableExpr("? AS ?", bun.Ident("status_to_tags"), bun.Ident("status_to_tag")).
-			Where("? = ?", bun.Ident("status_to_tag.status_id"), id).
 			Exec(ctx); err != nil {
 			return err
 		}
