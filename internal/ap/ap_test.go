@@ -98,6 +98,82 @@ func noteWithMentions1() vocab.ActivityStreamsNote {
 	return note
 }
 
+func (suite *APTestSuite) noteWithHashtags1() ap.Statusable {
+	noteJson := []byte(`
+{
+	"@context": [
+	  "https://www.w3.org/ns/activitystreams",
+	  {
+		"ostatus": "http://ostatus.org#",
+		"atomUri": "ostatus:atomUri",
+		"inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+		"conversation": "ostatus:conversation",
+		"sensitive": "as:sensitive",
+		"toot": "http://joinmastodon.org/ns#",
+		"votersCount": "toot:votersCount",
+		"Hashtag": "as:Hashtag"
+	  }
+	],
+	"id": "https://mastodon.social/users/pixelfed/statuses/110609702372389319",
+	"type": "Note",
+	"summary": null,
+	"inReplyTo": null,
+	"published": "2023-06-26T09:01:56Z",
+	"url": "https://mastodon.social/@pixelfed/110609702372389319",
+	"attributedTo": "https://mastodon.social/users/pixelfed",
+	"to": [
+	  "https://www.w3.org/ns/activitystreams#Public"
+	],
+	"cc": [
+	  "https://mastodon.social/users/pixelfed/followers",
+	  "https://gts.superseriousbusiness.org/users/gotosocial"
+	],
+	"sensitive": false,
+	"atomUri": "https://mastodon.social/users/pixelfed/statuses/110609702372389319",
+	"inReplyToAtomUri": null,
+	"conversation": "tag:mastodon.social,2023-06-26:objectId=474977189:objectType=Conversation",
+	"content": "<p>⚡ Heard of <span class=\"h-card\" translate=\"no\"><a href=\"https://gts.superseriousbusiness.org/@gotosocial\" class=\"u-url mention\">@<span>gotosocial</span></a></span> ?</p><p>GoToSocial provides a lightweight, customizable, and safety-focused entryway into the <a href=\"https://mastodon.social/tags/fediverse\" class=\"mention hashtag\" rel=\"tag\">#<span>fediverse</span></a>, you can keep in touch with your friends, post, read, and share images and articles.</p><p>Consider <a href=\"https://mastodon.social/tags/GoToSocial\" class=\"mention hashtag\" rel=\"tag\">#<span>GoToSocial</span></a> instead of Pixelfed if you&#39;d like a safety-focused alternative with text-only post support that is maintained by a stellar developer community!</p><p>We ❤️ GtS, check them out!</p><p>🌍 <a href=\"https://gotosocial.org/\" target=\"_blank\" rel=\"nofollow noopener noreferrer\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">gotosocial.org/</span><span class=\"invisible\"></span></a></p><p>🔍 <a href=\"https://fedidb.org/software/gotosocial\" target=\"_blank\" rel=\"nofollow noopener noreferrer\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">fedidb.org/software/gotosocial</span><span class=\"invisible\"></span></a></p>",
+	"contentMap": {
+	  "en": "<p>⚡ Heard of <span class=\"h-card\" translate=\"no\"><a href=\"https://gts.superseriousbusiness.org/@gotosocial\" class=\"u-url mention\">@<span>gotosocial</span></a></span> ?</p><p>GoToSocial provides a lightweight, customizable, and safety-focused entryway into the <a href=\"https://mastodon.social/tags/fediverse\" class=\"mention hashtag\" rel=\"tag\">#<span>fediverse</span></a>, you can keep in touch with your friends, post, read, and share images and articles.</p><p>Consider <a href=\"https://mastodon.social/tags/GoToSocial\" class=\"mention hashtag\" rel=\"tag\">#<span>GoToSocial</span></a> instead of Pixelfed if you&#39;d like a safety-focused alternative with text-only post support that is maintained by a stellar developer community!</p><p>We ❤️ GtS, check them out!</p><p>🌍 <a href=\"https://gotosocial.org/\" target=\"_blank\" rel=\"nofollow noopener noreferrer\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">gotosocial.org/</span><span class=\"invisible\"></span></a></p><p>🔍 <a href=\"https://fedidb.org/software/gotosocial\" target=\"_blank\" rel=\"nofollow noopener noreferrer\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">fedidb.org/software/gotosocial</span><span class=\"invisible\"></span></a></p>"
+	},
+	"attachment": [],
+	"tag": [
+	  {
+		"type": "Mention",
+		"href": "https://gts.superseriousbusiness.org/users/gotosocial",
+		"name": "@gotosocial@superseriousbusiness.org"
+	  },
+	  {
+		"type": "Hashtag",
+		"href": "https://mastodon.social/tags/fediverse",
+		"name": "#fediverse"
+	  },
+	  {
+		"type": "Hashtag",
+		"href": "https://mastodon.social/tags/gotosocial",
+		"name": "#gotosocial"
+	  }
+	],
+	"replies": {
+	  "id": "https://mastodon.social/users/pixelfed/statuses/110609702372389319/replies",
+	  "type": "Collection",
+	  "first": {
+		"type": "CollectionPage",
+		"next": "https://mastodon.social/users/pixelfed/statuses/110609702372389319/replies?only_other_accounts=true&page=true",
+		"partOf": "https://mastodon.social/users/pixelfed/statuses/110609702372389319/replies",
+		"items": []
+	  }
+	}
+}`)
+
+	statusable, err := ap.ResolveStatusable(context.Background(), noteJson)
+	if err != nil {
+		suite.FailNow(err.Error())
+	}
+
+	return statusable
+}
+
 func addressable1() ap.Addressable {
 	// make a note addressed to public with followers in cc
 	note := streams.NewActivityStreamsNote()

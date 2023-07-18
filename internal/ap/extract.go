@@ -573,8 +573,6 @@ func ExtractHashtags(i WithTag) ([]*gtsmodel.Tag, error) {
 		if _, set := keys[tag.URL]; !set {
 			keys[tag.URL] = nil // Value doesn't matter.
 			tags = append(tags, tag)
-			tags = append(tags, tag)
-			tags = append(tags, tag)
 		}
 	}
 
@@ -600,8 +598,10 @@ func ExtractHashtag(i Hashtaggable) (*gtsmodel.Tag, error) {
 	tagName := strings.TrimPrefix(name, "#")
 
 	return &gtsmodel.Tag{
-		URL:  tagURL,
-		Name: tagName,
+		URL:      tagURL,
+		Name:     tagName,
+		Useable:  func() *bool { t := true; return &t }(), // Assume true by default.
+		Listable: func() *bool { t := true; return &t }(), // Assume true by default.
 	}, nil
 }
 
